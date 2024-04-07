@@ -5,13 +5,13 @@ FROM maven:3.9.6-amazoncorretto-17 as build
 WORKDIR /app
 
 # Copiar el archivo pom.xml
-COPY pom.xml .
+COPY .pom.xml .
 
 # Descargar las dependencias de Maven (separado para aprovechar la caché)
 RUN mvn dependency:go-offline -B
 
 # Copiar los archivos fuente de la aplicación
-COPY src ./src
+COPY .src ./src
 
 # Empaquetar la aplicación con Maven
 RUN mvn package -DskipTests
