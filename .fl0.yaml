@@ -1,5 +1,16 @@
-build:
-  name: Build
-  strategy:
-    docker:
-      dockerfile: src/main/docker/dockerfile.jvm
+#build:
+#  name: Build
+#  strategy:
+#    docker:
+#      dockerfile: src/main/docker/dockerfile.jvm
+tasks:
+  build:
+    name: Build
+    image: docker
+    inputs:
+      - name: source
+        path: D:/Aproyect/Code/purchase  # Ruta al directorio del código fuente
+    steps:
+      - name: Build Docker image
+        run: |
+          docker build -t purchase -f dockerfile.jvm .
