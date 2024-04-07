@@ -39,7 +39,8 @@ public class UsuarioServiceImpl implements UsuarioService {
         List<PersonaDto.Response> responses = new ArrayList<>();
         for (PersonaDto.Request request :requests){
             PersonaEntity persona = personaMapper.toRequest(request);
-            personaRepository.save(persona);
+            PersonaEntity savedPersona = personaRepository.save(persona);
+            responses.add(personaMapper.toResponse(savedPersona));
         }
         return responses;
     }
