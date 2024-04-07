@@ -1,0 +1,5 @@
+build:
+  name: Build
+  strategy:
+    docker:
+      dockerfile: src/main/docker/dockerfile.jvm
