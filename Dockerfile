@@ -1,17 +1,16 @@
-FROM registry.access.redhat.com/ubi8/openjdk-17:1.18
+FROM quay.io/quarkus/ubi-quarkus-native-image:22.0.1-java17 AS builder
 
-ENV LANGUAGE='en_US:en'
+WORKDIR /usr/src/app
+COPY . .
 
+RUN mvn clean package -Pnative -Dnative-image.docker-build=true
 
-# We make four distinct layers so if there are application changes the library layers can be re-used
-COPY --chown=185 target/quarkus-app/lib/ /deployments/lib/
-COPY --chown=185 target/quarkus-app/*.jar /deployments/
-COPY --chown=185 target/quarkus-app/app/ /deployments/app/
-COPY --chown=185 target/quarkus-app/quarkus/ /deployments/quarkus/
+FROM registry.access.redhat.com/ubi8/ubi-minimal:latest
+
+WORKDIR /deployments
+
+COPY --from=builder /usr/src/app/target/*-runner /deployments/
 
 EXPOSE 8080
-USER 185
-ENV JAVA_OPTS_APPEND="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
-ENV JAVA_APP_JAR="/deployments/quarkus-run.jar"
 
-ENTRYPOINT [ "/opt/jboss/container/java/run/run-java.sh" ]
+CMD ["./my-application-runner", "-Dquarkus.http.host=0.0.0.0", "-Djava.util.logging.manager=org.jboss.logmanager.LogManager"]
